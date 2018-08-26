@@ -259,7 +259,7 @@ namespace Inline2018
         bool IsTextAdd(string input)                                                        //Checks if expression in variable declaration is literal string
         {
             Regex regexString = new Regex(@"^(\""(?'string'[A-z 0-9 .#$_]*)\"")+");
-            if (regexString.IsMatch(input))
+            if (regexString.IsMatch(input) && syntax.IsStringValid(input))
                 return true;
             else
                 return false;
@@ -320,7 +320,7 @@ namespace Inline2018
                     variables.Add(variable, EvaluateExpression(postfixExpression));
                     types.Add(variable, "numerical");
                 }
-                else if (syntax.IsConcatenation(expression))                                //Check if it's string concatenation expression
+                else if (syntax.IsConcatenation(expression) && syntax.IsStringValid(expression))                                //Check if it's string concatenation expression
                 {
                     string concatenatedString = Concatenate(expression);
                     variables.Add(variable, concatenatedString);
@@ -343,10 +343,15 @@ namespace Inline2018
                         newValue = parser.StringParse(expression);
                         variables[variable] = newValue;
                     }
-                    else if (syntax.IsConcatenation(expression))
+                    else if (syntax.IsConcatenation(expression) && syntax.IsStringValid(expression))
                     {
                         newValue = Concatenate(expression);
                         variables[variable] = newValue;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid declaration of variable: " + variable);
+                        return input;
                     }
                 }
                 else if (types[variable] == "numerical" && !syntax.IsContainingLetters(expression))

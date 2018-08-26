@@ -54,6 +54,11 @@ namespace Inline2018
             return Regex.IsMatch(input, @"(\<all_caps\>)+(?'string'[A-z 0-9 .#$_]*)(\<\/all_caps\>)+");
         }
 
+        public bool IsStringValid(string input)                                                                                         //Checking if there is equal number of quotation marks
+        {
+            return input.Count(x => x == '"') % 2 == 0;
+        }
+
         public bool IsInline(string input)                                                                                              //Check for inline reserved simbol
         {
             return Regex.IsMatch(input, @"\@{ (?'expression'.+) }");
