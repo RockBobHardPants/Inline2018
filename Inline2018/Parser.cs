@@ -9,14 +9,14 @@ namespace Inline2018
 {
     class Parser
     {
-        public string StringParse(string input)
+        public string StringParse(string input)                                         //String parser
         {
-            Regex litertal_str = new Regex("\"(?'text'.*?)\"");
-            MatchCollection matchCollection = litertal_str.Matches(input);
+            Regex litertal_str = new Regex("\"(?'text'.*?)\"");                         
+            MatchCollection matchCollection = litertal_str.Matches(input);              //Collection of all strings to parse
             foreach (var match in matchCollection)
             {
-                string oldText = litertal_str.Match(input).ToString();
-                string text = litertal_str.Match(input).Groups["text"].ToString();
+                string oldText = litertal_str.Match(input).ToString();                  //Old string to replace
+                string text = litertal_str.Match(input).Groups["text"].ToString();      //Getting string from regex match
                 input = input.Replace(oldText, text);
             }
             return input;

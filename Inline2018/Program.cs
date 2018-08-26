@@ -13,7 +13,7 @@ namespace Inline2018
         static void Main(string[] args)
         {
             Inline2018main main = new Inline2018main();
-            string path = @"C:\Users\acobo\Desktop\Text.txt";
+            string path = args[0];
             main.Run(path);
             main.Out();
             Console.ReadKey();

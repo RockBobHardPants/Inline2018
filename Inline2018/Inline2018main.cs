@@ -13,11 +13,11 @@ namespace Inline2018
     {
         SyntaxClass syntax = new SyntaxClass();
         Parser parser = new Parser();
-        List<string> outLineList = new List<string>();
-        Dictionary<string, string> variables = new Dictionary<string, string>();
-        Dictionary<string, string> types = new Dictionary<string, string>();
+        List<string> outLineList = new List<string>();                                      //list of lines that will be printed out
+        Dictionary<string, string> variables = new Dictionary<string, string>();            //Contains variable names and their values
+        Dictionary<string, string> types = new Dictionary<string, string>();                //Contains variable names and their types
 
-        int GetInputPriority(string checkOperator)
+        int GetInputPriority(string checkOperator)                                          //Returns priority of operators for infix to postfix transformation
         {
             switch (checkOperator)
             {
@@ -39,7 +39,7 @@ namespace Inline2018
             return -1;
         }
 
-        int GetStackPriority(string checkOperator)
+        int GetStackPriority(string checkOperator)                                          //Returns priority of operators that are on stack
         {
             switch (checkOperator)
             {
@@ -59,17 +59,17 @@ namespace Inline2018
             return -1;
         }
 
-        bool IsOperator(string check)
+        bool IsOperator(string check)                                                       //Check is given string is an valid operator
         {
             if (check == "+" || check == "*" || check == "/" || check == "-" || check == "%")
                 return true;
             return false;
         }
 
-        string InfixToPostfix(string infix)
+        string InfixToPostfix(string infix)                                                 //Infix to postfix transformation algorythm
         {
-            Regex numberRegex = new Regex(@"[+|-]?[0-9]+");
-            Regex itemRegex = new Regex(@"\S+");
+            Regex numberRegex = new Regex(@"[+|-]?[0-9]+");                                 
+            Regex itemRegex = new Regex(@"\S+");                                            //Matching everything that is not white space
             MatchCollection itemCollection = itemRegex.Matches(infix);
             string outputString = "";
             Stack<string> operatorStack = new Stack<string>();
@@ -135,7 +135,7 @@ namespace Inline2018
             }
         }
 
-        double DoTheMath(double firstOperand, double secondOperand, string operation)
+        double DoTheMath(double firstOperand, double secondOperand, string operation)       //Doing the math
         {
             try
             {
@@ -160,9 +160,9 @@ namespace Inline2018
                 Console.WriteLine(exception.Message);
                 return -1000000000000000;
             }
-        }
+        }          
 
-        string EvaluateExpression(string expression)
+        string EvaluateExpression(string expression)                                        //Evaluating expression that has been transformed to postfix
         {
             Stack<double> operandStack = new Stack<double>();
             Regex numberRegex = new Regex(@"[+|-]?[0-9]+");
@@ -195,7 +195,7 @@ namespace Inline2018
             }
         }
 
-        bool CheckTagsNumber(string input)
+        bool CheckTagsNumber(string input)                                                  //Checking if there is same number of closing tags as openning
         {
             Regex openTagsRegex = new Regex(@"\<all_caps\>");
             Regex closedTagsRegex = new Regex(@"\<\/all_caps\>");
@@ -207,7 +207,7 @@ namespace Inline2018
                 return false;
         }
 
-        string DoTheCaps(string input)
+        string DoTheCaps(string input)                                                      //Transforming lowercase letter to uppercase if tags are correct
         {
             Regex regex = new Regex(@"(\<all_caps\>)+(?'string'[A-z 0-9 .#$_]*)(\<\/all_caps\>)+");
             MatchCollection matchCollection = regex.Matches(input);
@@ -242,7 +242,7 @@ namespace Inline2018
             return input;
         }
 
-        string Concatenate(string input)
+        string Concatenate(string input)                                                    //Concatenating string 
         {
             Regex regex = new Regex("\"(?'text'.*?)\"");
             MatchCollection matchCollection = regex.Matches(input);
@@ -251,12 +251,12 @@ namespace Inline2018
             return input;
         }
 
-        bool IsVariableDeclared(string input)
+        bool IsVariableDeclared(string input)                                               //Checks for variables in variables dictionary
         {
             return variables.ContainsKey(input);
         }
 
-        bool IsTextAdd(string input)
+        bool IsTextAdd(string input)                                                        //Checks if expression in variable declaration is literal string
         {
             Regex regexString = new Regex(@"^(\""(?'string'[A-z 0-9 .#$_]*)\"")+");
             if (regexString.IsMatch(input))
@@ -265,27 +265,27 @@ namespace Inline2018
                 return false;
         }
 
-        string VariableAdd(string input)
+        string VariableAdd(string input)                                                    //Putting variable value in expressions, if that variable is declared
         {
             Regex regex = new Regex(@"\[(?'variable'[A-z]+[0-9]*[_\.\$#]*?)\]");
             MatchCollection matchCollection = regex.Matches(input);
-            if (matchCollection.Count != 0)
+            if (matchCollection.Count != 0)                                                 //Checking if there is any variable in expression
             {
                 try
                 {
                     foreach (var x in matchCollection)
                     {
-                        if (!regex.IsMatch(input))
+                        if (!regex.IsMatch(input))                                          //If all variables have already been replaced, this will just kill the loop
                             break;
-                        string variable = regex.Match(input).Groups["variable"].ToString();
-                        string oldExpression = regex.Match(input).Value.ToString();
+                        string variable = regex.Match(input).Groups["variable"].ToString(); //Getting name of variable that has to be replaced with it's value
+                        string oldExpression = regex.Match(input).Value.ToString();         //Getting variable name so it can be replaced with value
                         if (IsVariableDeclared(variable))
                         {
                             string newExpression = variables[variable].ToString();
                             input = input.Replace(oldExpression, newExpression);
                         }
                         else
-                        {
+                        {                                                                   //If variable is not declared it will replace it with empty string for convenience
                             Console.WriteLine("Variable: " + variable + " was not declared!");
                             input = input.Replace(oldExpression, "");
                         }
@@ -299,41 +299,41 @@ namespace Inline2018
             return input;
         }
 
-        string VarDeclaration(string input)
+        string VarDeclaration(string input)                                                 //Variable declaration is done here
         {
             Regex regex = new Regex(@"^\[(?'variable'.*)\] *= *(?'expression'.*)$");
             string variable = regex.Match(input).Groups["variable"].ToString();
             string expression = regex.Match(input).Groups["expression"].ToString();
-            expression = VariableAdd(expression);
-            if (expression == "")
+            expression = VariableAdd(expression);                                           //Calls VariableAdd to put values of already declared variables in expression
+            if (expression == "")                                                           //If expression is empty string, it will just return it
                 return expression;
-            if (!IsVariableDeclared(variable))
+            if (!IsVariableDeclared(variable))                                              //Check if there is already variable with this name
             {
-                if (IsTextAdd(expression) && !syntax.IsConcatenation(expression))
+                if (IsTextAdd(expression) && !syntax.IsConcatenation(expression))           //Check if it's literal string declaration
                 {
                     variables.Add(variable, parser.StringParse(expression));
-                    types.Add(variable, "string");
+                    types.Add(variable, "string");                                          //Setting type for current variable
                 }
-                else if (!syntax.IsContainingLetters(expression))
+                else if (!syntax.IsContainingLetters(expression))                           //Check if it's a numerical expression
                 {
                     string postfixExpression = InfixToPostfix(expression);
                     variables.Add(variable, EvaluateExpression(postfixExpression));
                     types.Add(variable, "numerical");
                 }
-                else if (syntax.IsConcatenation(expression))
+                else if (syntax.IsConcatenation(expression))                                //Check if it's string concatenation expression
                 {
                     string concatenatedString = Concatenate(expression);
                     variables.Add(variable, concatenatedString);
                     types.Add(variable, "string");
                 }
                 else
-                {
+                {                                                                           //If variable declaration is invalid, it prints out error message
                     Console.WriteLine("Invalid declaration of variable: " + variable);
                     return input;
                 }
             }
             else
-            {
+            {                                                                               //If variable is already declared, and if types are matching, it replaces old value with new value
                 string oldVariable = variables[variable];
                 string newValue;
                 if (types[variable] == "string" && syntax.IsContainingLetters(expression))
@@ -363,9 +363,9 @@ namespace Inline2018
             return input;
         }
 
-        string ReplaceVariables(string input)
+        string ReplaceVariables(string input)                                               //Replaces variable names that have reserved symbol '=' in front with their value from dictionary
         {
-            Regex regex = new Regex(@"=\[(?'variable'[A-z 0-9]+?)\]");
+            Regex regex = new Regex(@"=\[(?'variable'[A-z 0-9 _.$#]+?)\]");
             try
             {
                 MatchCollection matchCollection = regex.Matches(input);
@@ -392,16 +392,16 @@ namespace Inline2018
             return input;
         }
 
-        string InlineBlock(string input)
+        string InlineBlock(string input)                                                    //Checks for reserved symbol for inline block
         {
             Regex regex = new Regex(@"\@{ (?'expression'.+) }");
             string inlineExpression = regex.Match(input).ToString();
-            VarDeclaration(regex.Match(input).Groups["expression"].ToString());
+            VarDeclaration(regex.Match(input).Groups["expression"].ToString());             //Calls variable declaration method for expression in inline block
             input = input.Replace(inlineExpression, "");
             return input;
         }
 
-        public void Out()
+        public void Out()                                                                   //Print lines that are added to line list
         {
             Console.WriteLine();
             Console.WriteLine("Inline2018 out: ");
@@ -412,46 +412,54 @@ namespace Inline2018
             Console.WriteLine("Press any key to continue ");
         }
         
-        public bool Run(string path)
+        public bool Run(string path)                                                        //Main method, everything is called from here
         {
             try
             {
-                if (!File.Exists(path))
+                if (!File.Exists(path))                                                     //Checking if path to file exists
                 {
                     Console.WriteLine("File does not exist!");
                     return false;
                 }
-                using (StreamReader reader = new StreamReader(path))
+                using (StreamReader reader = new StreamReader(path))                        //Getting line by line text from input file
                 {
-                    while (reader.Peek() > -1)
+                    while (reader.Peek() > -1)                                              //Checking for end of file
                     {
                         string line = reader.ReadLine();
-                        if (!syntax.IsCharValid(line))
+                        if (!syntax.IsCharValid(line))                                      //Checking for invalid characters in current line
                             return false;
                         if (syntax.IsInline(line))
                         {
-                            line = InlineBlock(line);
+                            line = InlineBlock(line);                                       //Calling inline block
                         }
-                        if (syntax.IsInclude(line))
+                        if (syntax.IsInclude(line))                                         //Including new input file if there is one, and calling Run method with new path
                         {
                             Regex regex = new Regex(@"(\""include\"") (?'path'\"".+\"")");
                             string newPath = regex.Match(line).Groups["path"].ToString();
                             newPath = newPath.Replace("\"", "");
-                            Run(newPath);
-                            continue;
+                            if (path == newPath)
+                            {
+                                Console.WriteLine("Cannot include same file!");
+                                continue;
+                            }
+                            else
+                            {
+                                Run(newPath);
+                                continue;
+                            }
                         }
                         if (syntax.CheckTags(line))
                         {
-                            line = DoTheCaps(line);
+                            line = DoTheCaps(line);                                         //Doing the caps
                         }
                         if (syntax.IsDeclaration(line))
                         {
-                            VarDeclaration(line);
+                            VarDeclaration(line);                                           //Declaring variable if line is variable declaration
                         }
                         else
                         {
-                            string newLine = ReplaceVariables(line);
-                            outLineList.Add(newLine);
+                            string newLine = ReplaceVariables(line);                        //Replacing variables with their value in text lines
+                            outLineList.Add(newLine);                                       //Adding lines that have to be printed to list
                         }
                     }
                 }
